@@ -143,7 +143,7 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     "JWT_SECRET_KEY": SECRET_KEY,  # FIXME: JWT_SECRET_KEY
     "JWT_ALGORITHM": "HS256",
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "JWT_EXPIRATION_DELTA": timedelta(days=7),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=28),
 }

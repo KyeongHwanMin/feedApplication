@@ -7,7 +7,7 @@ from post.models import Post
 
 class analyticsAPIView(APIView):
     def get(self, request):
-        hashtag = request.query_params.get("hashtag", "본인계정")
+        hashtag = request.query_params.get("hashtag")
         value_type = request.query_params.get("value", "count")
         calculation_type = request.query_params.get("type", "date")
 
@@ -44,8 +44,13 @@ class analyticsAPIView(APIView):
         elif calculation_type == "hour" and (end_date - start_date).days > 7:
             return Response({"최대 일주일(7일) 조회 가능합니다."}, status=400)
 
-        qs = Post.objects.filter(
-            hashtags__name__iexact=hashtag,
-            created_at__range=[start_date, end_date + timedelta(days=1)],
-        )
+        if hashtag is None:
+            qs = Post.objects.filter(
+                created_at__range=[start_date, end_date + timedelta(days=1)],
+            )
+        else:
+            qs = Post.objects.filter(
+                hashtags__name__iexact=hashtag,
+                created_at__range=[start_date, end_date + timedelta(days=1)],
+            )
         breakpoint()
