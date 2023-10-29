@@ -1,3 +1,80 @@
-from django.shortcuts import render
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-# Create your views here.
+from post.models import Post
+from post.serializers import PostListSerializer, PostWriteSerializer
+
+
+class MyPageNumberPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_count"
+
+    def get_page_size(self, request):
+        page_count_value = request.query_params.get(self.page_size_query_param)
+        if page_count_value and page_count_value.isdigit():
+            return int(page_count_value)
+        else:
+            return self.page_size
+
+
+class PostListAPIView(APIView):
+    def get(self, request):
+        user_id = request.user.id
+        hashtag = request.query_params.get("hashtag")
+        type = request.query_params.get("type")
+        order_by = request.query_params.get("order_by", "created_at")
+        search_by = request.query_params.get("search_by", "title,content")
+        search = request.query_params.get("search")
+
+        qs = Post.objects.all()
+
+        if hashtag:
+            qs = qs.filter(hashtags__name__iexact=hashtag, user=user_id)
+        if type:
+            qs = qs.filter(type=type)
+
+        if search:
+            search_query = Q()
+            if "title" in search_by:
+                search_query |= Q(title__icontains=search)
+            if "content" in search_by:
+                search_query |= Q(content__icontains=search[:20])
+            qs = qs.filter(search_query)
+
+        if order_by:
+            orders_Ascending = [
+                "created_at",
+                "updated_at",
+                "like_count",
+                "share_count",
+                "view_count",
+            ]
+            orders_descending = [
+                "-created_at",
+                "-updated_at",
+                "-like_count",
+                "-share_count",
+                "-view_count",
+            ]
+            if order_by in orders_Ascending:
+                qs = qs.order_by(order_by)
+            elif order_by in orders_descending:
+                qs = qs.order_by(order_by)
+
+        paginator = MyPageNumberPagination()
+        paginated_qs = paginator.paginate_queryset(qs, request)
+
+        if paginated_qs is not None:
+            serializer = PostListSerializer(paginated_qs, many=True)
+            return paginator.get_paginated_response(serializer.data)
+        serializer = PostListSerializer(qs, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = PostWriteSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+
+        return Response(serializer.errors, status=400)
