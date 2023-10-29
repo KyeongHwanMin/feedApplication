@@ -1,9 +1,11 @@
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from post.models import Post
-from post.serializers import PostListSerializer, PostWriteSerializer
+from post.serializers import PostWriteSerializer, PostListSerializer
 
 
 class MyPageNumberPagination(PageNumberPagination):
@@ -78,3 +80,15 @@ class PostListAPIView(APIView):
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
+
+
+class PostListDetailAPIView(APIView):
+    def get_object(self, pk):
+        return get_object_or_404(Post, pk=pk)
+
+    def get(self, request, pk):
+        post = self.get_object(pk)
+        serializer = PostListSerializer(post)
+        post.view_count += 1
+        post.save()
+        return Response(serializer.data, status=200)
