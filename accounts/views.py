@@ -36,6 +36,7 @@ class UserVerificationView(APIView):
                 return Response("인증번호가 일치하지 않습니다.", status=status.HTTP_400_BAD_REQUEST)
 
             user.is_active = True
+            user.verification_code = None
             user.save()
 
             return Response("회원가입이 승인되었습니다.", status=status.HTTP_200_OK)
