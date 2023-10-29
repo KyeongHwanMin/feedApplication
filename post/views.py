@@ -93,3 +93,14 @@ class PostListDetailAPIView(APIView):
 
         post.save()
         return Response(serializer.data, status=200)
+
+
+class PostLikeAPIView(APIView):
+    def get_object(self, content_id):
+        return get_object_or_404(Post, content_id=content_id)
+
+    def post(self, request, content_id):
+        post = self.get_object(content_id)
+        post.like_count += 1
+        post.save()
+        return Response(status=200)
