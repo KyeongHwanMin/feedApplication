@@ -90,5 +90,6 @@ class PostListDetailAPIView(APIView):
         post = self.get_object(pk)
         serializer = PostListSerializer(post)
         post.view_count += 1
+
         post.save()
         return Response(serializer.data, status=200)
