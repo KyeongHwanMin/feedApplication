@@ -1,7 +1,7 @@
 from django.urls import path
+from accounts.views import UserAPIView, UserVerificationView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from accounts.views import UserAPIView, UserVerificationView
 
 urlpatterns = [
     path("", UserAPIView.as_view(), name="user"),

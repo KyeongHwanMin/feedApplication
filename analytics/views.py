@@ -1,3 +1,5 @@
+from django.db.models import Sum
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from datetime import timedelta, datetime
@@ -6,6 +8,7 @@ from post.models import Post
 
 
 class analyticsAPIView(APIView):
+
     def get(self, request):
         hashtag = request.query_params.get("hashtag")
         value_type = request.query_params.get("value", "count")
@@ -45,7 +48,9 @@ class analyticsAPIView(APIView):
             return Response({"최대 일주일(7일) 조회 가능합니다."}, status=400)
 
         if hashtag is None:
+            user_id = request.user
             qs = Post.objects.filter(
+                user=user_id,
                 created_at__range=[start_date, end_date + timedelta(days=1)],
             )
         else:
@@ -53,4 +58,23 @@ class analyticsAPIView(APIView):
                 hashtags__name__iexact=hashtag,
                 created_at__range=[start_date, end_date + timedelta(days=1)],
             )
-        breakpoint()
+
+        if calculation_type == "date":
+            for i in range((end_date - start_date).days + 1):
+                date = start_date + timedelta(days=i)
+
+                if value_type == "count":
+                    count = qs.filter(created_at__date=date).count()
+                    print("date", date)
+                    print("count", count)
+
+                elif value_type in ["view_count", "like_count", "share_count"]:
+                    value = qs.filter(created_at__date=date).aggregate(total=Sum(value_type))["total"] or 0
+                    print(qs)
+                    print("date", date)
+                    print(value)
+
+
+
+            return Response(status=200)
+
