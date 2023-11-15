@@ -1,7 +1,5 @@
 # feedApplication
 
-![logo](https://static.wanted.co.kr/images/events/3178/58ac3248.jpg)
-
 # 메일 정리 자동화 웹서비스
 고객의 메세지를 태그, 스팸 처리 등 자동으로 분류해주는 웹 서비스
 
