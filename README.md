@@ -430,14 +430,3 @@ To run tests, run the following command
 
 
 <br/>
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-=======
->>>>>>> af8e8d11d793d5faa33fbabd2ca67fc5b5dfac5d
