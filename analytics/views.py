@@ -1,3 +1,5 @@
+from django.db.models import Sum
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from datetime import timedelta, datetime
@@ -45,14 +47,18 @@ class analyticsAPIView(APIView):
             return Response({"최대 일주일(7일) 조회 가능합니다."}, status=400)
 
         if hashtag is None:
+            user_id = request.user
             qs = Post.objects.filter(
+                user=user_id,
                 created_at__range=[start_date, end_date + timedelta(days=1)],
             )
+
         else:
             qs = Post.objects.filter(
                 hashtags__name__iexact=hashtag,
                 created_at__range=[start_date, end_date + timedelta(days=1)],
             )
+
         count_result = {}
         if calculation_type == "date":
             for i in range((end_date - start_date).days + 1):

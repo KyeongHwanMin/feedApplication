@@ -3,7 +3,7 @@ from post.models import Post, Hashtag
 
 
 class PostListSerializer(serializers.ModelSerializer):
-    hashtags = serializers.StringRelatedField(many=True, read_only=True)
+    hashtags = serializers.StringRelatedField(many=True, read_only=True, required=False)
 
     class Meta:
         model = Post
@@ -11,10 +11,12 @@ class PostListSerializer(serializers.ModelSerializer):
 
 
 class PostWriteSerializer(serializers.ModelSerializer):
-    hashtags = serializers.ListField(child=serializers.CharField(), write_only=True)
+    hashtags = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
 
     def create(self, validated_data):
-        hashtag_names = validated_data.pop("hashtags")
+
+        hashtag_names = validated_data.pop("hashtags", [])
+
         post = Post.objects.create(**validated_data)
 
         for name in hashtag_names:
@@ -25,4 +27,4 @@ class PostWriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ["title", "content", "type", "hashtags", "user"]
+        fields = ["content_id","title", "content", "type", "hashtags", "user"]

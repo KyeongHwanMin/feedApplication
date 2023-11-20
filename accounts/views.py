@@ -22,6 +22,7 @@ class UserVerificationView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+
         username = request.data.get("username")
         password = request.data.get("password")
         verification_code = request.data.get("verification_code")
