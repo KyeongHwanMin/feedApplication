@@ -53,4 +53,40 @@ class analyticsAPIView(APIView):
                 hashtags__name__iexact=hashtag,
                 created_at__range=[start_date, end_date + timedelta(days=1)],
             )
-        breakpoint()
+        count_result = {}
+        if calculation_type == "date":
+            for i in range((end_date - start_date).days + 1):
+                date = start_date + timedelta(days=i)
+                if value_type == "count":
+                    count = qs.filter(created_at__date=date).count()
+                    count_result[str(date)] = count
+                elif value_type in ["view_count", "like_count", "share_count"]:
+                    value = (
+                        qs.filter(created_at__date=date).aggregate(
+                            total=Sum(value_type)
+                        )["total"]
+                        or 0
+                    )
+                    count_result[str(date)] = value
+        elif calculation_type == "hour":
+            oneHour = timedelta(hours=1)
+            while start_date <= end_date:
+                if value_type == "count":
+                    count = qs.filter(
+                        created_at__range=[start_date, start_date + oneHour]
+                    ).count()
+                    count_result[str(start_date.strftime("%Y-%m-%d %H:%M"))] = (
+                        value_type + ": " + str(count)
+                    )
+                elif value_type in ["view_count", "like_count", "share_count"]:
+                    count = (
+                        qs.filter(
+                            created_at__range=[start_date, start_date + oneHour]
+                        ).aggregate(total=Sum(value_type))["total"]
+                        or 0
+                    )
+                    count_result[str(start_date.strftime("%Y-%m-%d %H:%M"))] = (
+                        value_type + ": " + str(count)
+                    )
+                start_date += oneHour
+        return Response(count_result, status=200)
