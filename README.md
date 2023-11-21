@@ -28,8 +28,7 @@
 ## Skils
 가상환경: ![Static Badge](https://img.shields.io/badge/Venv-green)<br/>
 언어 및 프레임워크: ![Static Badge](https://img.shields.io/badge/Python-3.12-blue) ![Static Badge](https://img.shields.io/badge/Django-REST-red)<br/>
-<!-- 데이터 베이스: ![Static Badge](https://img.shields.io/badge/SQLite-blue) <br/>
-배포 : ![Static Badge](https://img.shields.io/badge/Docker-039BC6) ![Static Badge](https://img.shields.io/badge/AWS-EC2-orange) ![Static Badge](https://img.shields.io/badge/Github-Actions-black)  <br/> ETC : ![Static Badge](https://img.shields.io/badge/Celery-black) ![Static Badge](https://img.shields.io/badge/Redis-red) -->
+데이터 베이스: ![Static Badge](https://img.shields.io/badge/SQLite-blue) <br/>
 
 <br/>
 
